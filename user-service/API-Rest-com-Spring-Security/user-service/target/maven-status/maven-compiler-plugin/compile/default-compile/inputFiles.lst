@@ -1,0 +1,16 @@
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\user-service\src\main\java\com\ms\userservice\services\JwtTokenService.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\user-service\src\main\java\com\ms\userservice\UserServiceApplication.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\user-service\src\main\java\com\ms\userservice\configs\SecurityConfiguration.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\user-service\src\main\java\com\ms\userservice\dtos\CreateUserDto.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\user-service\src\main\java\com\ms\userservice\dtos\RecoveryJwtTokenDto.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\user-service\src\main\java\com\ms\userservice\filters\UserAuthenticationFilter.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\user-service\src\main\java\com\ms\userservice\repositories\UserRepository.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\user-service\src\main\java\com\ms\userservice\services\UserService.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\user-service\src\main\java\com\ms\userservice\controllers\UserController.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\user-service\src\main\java\com\ms\userservice\dtos\LoginUserDto.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\user-service\src\main\java\com\ms\userservice\services\UserDetailsServiceImpl.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\user-service\src\main\java\com\ms\userservice\entities\RoleName.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\user-service\src\main\java\com\ms\userservice\services\UserDetailsImpl.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\user-service\src\main\java\com\ms\userservice\repositories\RoleRepository.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\user-service\src\main\java\com\ms\userservice\entities\Role.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\user-service\src\main\java\com\ms\userservice\entities\User.java

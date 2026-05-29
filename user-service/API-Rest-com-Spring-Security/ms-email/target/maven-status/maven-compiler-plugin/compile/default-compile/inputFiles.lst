@@ -1,0 +1,8 @@
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-email\src\main\java\com\ms\email\consumers\EmailConsumer.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-email\src\main\java\com\ms\email\dtos\EmailRecordDto.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-email\src\main\java\com\ms\email\MsEmailApplication.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-email\src\main\java\com\ms\email\services\EmailService.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-email\src\main\java\com\ms\email\repositories\EmailRepository.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-email\src\main\java\com\ms\email\configs\RabbitMQConfig.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-email\src\main\java\com\ms\email\enums\StatusEmail.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-email\src\main\java\com\ms\email\models\EmailModel.java

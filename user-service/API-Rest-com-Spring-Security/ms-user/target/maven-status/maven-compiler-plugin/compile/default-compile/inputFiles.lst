@@ -1,0 +1,9 @@
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-user\src\main\java\com\ms\user\dtos\UserRecordDto.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-user\src\main\java\com\ms\user\producers\UserProducer.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-user\src\main\java\com\ms\user\services\UserService.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-user\src\main\java\com\ms\user\controllers\UserController.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-user\src\main\java\com\ms\user\MsUserApplication.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-user\src\main\java\com\ms\user\repositories\UserRepository.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-user\src\main\java\com\ms\user\dtos\EmailDto.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-user\src\main\java\com\ms\user\models\UserModel.java
+H:\Usuario\Fael_debroi\Desktop\IFSP\5 semestre\web 3\SegurançEstrutura\user-service\API-Rest-com-Spring-Security\ms-user\src\main\java\com\ms\user\configs\RabbitMQConfig.java

@@ -1,0 +1,16 @@
+com\ms\userservice\dtos\CreateUserDto.class
+com\ms\userservice\services\UserDetailsImpl.class
+com\ms\userservice\dtos\RecoveryJwtTokenDto.class
+com\ms\userservice\configs\SecurityConfiguration.class
+com\ms\userservice\filters\UserAuthenticationFilter.class
+com\ms\userservice\entities\Role.class
+com\ms\userservice\services\UserService.class
+com\ms\userservice\dtos\LoginUserDto.class
+com\ms\userservice\repositories\RoleRepository.class
+com\ms\userservice\controllers\UserController.class
+com\ms\userservice\entities\User.class
+com\ms\userservice\repositories\UserRepository.class
+com\ms\userservice\entities\RoleName.class
+com\ms\userservice\UserServiceApplication.class
+com\ms\userservice\services\JwtTokenService.class
+com\ms\userservice\services\UserDetailsServiceImpl.class
