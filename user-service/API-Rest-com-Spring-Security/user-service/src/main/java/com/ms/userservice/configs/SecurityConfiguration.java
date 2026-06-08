@@ -28,6 +28,7 @@ public class SecurityConfiguration {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(new AntPathRequestMatcher("/users", HttpMethod.POST.name())).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/users/login", HttpMethod.POST.name())).permitAll()
+                .requestMatchers(new AntPathRequestMatcher("/auth/request-code", HttpMethod.POST.name())).permitAll()
                 .requestMatchers(new AntPathRequestMatcher("/users/test/customer", HttpMethod.GET.name())).hasRole("CUSTOMER")
                 .requestMatchers(new AntPathRequestMatcher("/users/test/administrator", HttpMethod.GET.name())).hasRole("ADMINISTRATOR")
                 .anyRequest().authenticated()

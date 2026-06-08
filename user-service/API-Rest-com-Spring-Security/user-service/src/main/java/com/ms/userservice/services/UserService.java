@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -48,5 +49,18 @@ public class UserService {
             .orElseGet(() -> roleRepository.save(new Role(roleName)));
         User user = new User(dto.email(), passwordEncoder.encode(dto.password()), List.of(role));
         userRepository.save(user);
+    }
+
+    public UUID encontrarOuCriarUsuario(String email) {
+        return userRepository.findByEmail(email)
+            .map(u -> UUID.nameUUIDFromBytes(String.valueOf(u.getId()).getBytes()))
+            .orElseGet(() -> {
+                Role role = roleRepository.findByName(RoleName.ROLE_CUSTOMER)
+                    .orElseGet(() -> roleRepository.save(new Role(RoleName.ROLE_CUSTOMER)));
+                String senhaAleatoria = UUID.randomUUID().toString();
+                User novoUsuario = new User(email, passwordEncoder.encode(senhaAleatoria), List.of(role));
+                userRepository.save(novoUsuario);
+                return UUID.nameUUIDFromBytes(String.valueOf(novoUsuario.getId()).getBytes());
+            });
     }
 }

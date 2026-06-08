@@ -2,7 +2,7 @@
 
 Projeto acadêmico desenvolvido para a disciplina **Web 3 — IFSP**  
 Curso de Análise e Desenvolvimento de Sistemas · CP3025861  
-Tag de entrega: `entrega1`
+Tag de entrega: `entrega2`
 
 ---
 
@@ -12,7 +12,7 @@ Este repositório contém três microsserviços Spring Boot independentes que ju
 
 | Serviço | Porta | Função |
 |---------|-------|--------|
-| `user-service` | 8081 | Autenticação e autorização com JWT + Spring Security |
+| `user-service` | 8081 | Autenticação JWT + geração de OTP + publicação no RabbitMQ |
 | `ms-user` | 8081 | Cadastro de usuários com publicação de evento no RabbitMQ |
 | `ms-email` | 8082 | Consumidor RabbitMQ que envia e-mail e persiste o registro |
 
@@ -22,23 +22,27 @@ Este repositório contém três microsserviços Spring Boot independentes que ju
 
 ## Arquitetura
 
-### user-service (Etapa 1)
+### user-service (Etapa 1 + Etapa 2)
 
 ```
 Cliente (Postman)
      │
-     ├── POST /users          → cria usuário com senha BCrypt e role
-     ├── POST /users/login    → autentica e retorna token JWT
-     └── GET  /users/test/*   → rota protegida por role
-              │
-         [Spring Security]
-         UserAuthenticationFilter → JwtTokenService → UserDetailsServiceImpl
-              │
-         [MySQL] banco: ms_user
-         tabelas: users, roles, users_roles
+     ├── POST /users              → cria usuário com senha BCrypt e role
+     ├── POST /users/login        → autentica e retorna token JWT
+     ├── GET  /users/test/*       → rota protegida por role
+     └── POST /auth/request-code → gera OTP, armazena em cache, publica no RabbitMQ
+              │                          │
+         [Spring Security]        [CodigoCacheService]
+         UserAuthenticationFilter  ConcurrentHashMap — TTL 5 min
+         → JwtTokenService                │
+         → UserDetailsServiceImpl  [UserProducer]
+              │                    RabbitTemplate → fila: default.email
+         [MySQL] banco: ms_user           │
+         tabelas: users, roles,    [ms-email] consome e envia e-mail
+                  users_roles
 ```
 
-### ms-user + ms-email (Etapa 2)
+### ms-user + ms-email
 
 ```
 Cliente
@@ -89,7 +93,7 @@ CREATE DATABASE ms_email;
 
 ## Como executar
 
-Abra um terminal separado para cada serviço. Navegue até a pasta do projeto antes de rodar.
+Abra um terminal separado para cada serviço.
 
 ### user-service
 
@@ -98,12 +102,12 @@ cd "H:\...\API-Rest-com-Spring-Security\user-service"
 mvn spring-boot:run
 ```
 
-Aguarde a mensagem:
+Aguarde:
 ```
 Started UserServiceApplication in X seconds
 ```
 
-### ms-user (apenas Etapa 2 — não rodar junto com user-service)
+### ms-user (não rodar junto com user-service)
 
 ```powershell
 cd "H:\...\API-Rest-com-Spring-Security\ms-user"
@@ -127,7 +131,7 @@ mvn spring-boot:run
 - Spring Security 6 (stateless, sem sessão)
 - JWT — biblioteca `jjwt 0.11.5`
 - Spring Data JPA + Hibernate
-- Spring AMQP (reservado para Etapa 2)
+- Spring AMQP (RabbitMQ producer)
 - MySQL via HikariCP
 - BCrypt para hash de senha
 
@@ -198,7 +202,7 @@ Público (sem autenticação).
 **Resposta `200 OK`:**
 ```json
 {
-  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2FvQGVtYWlsLmNvbSIsImlhdCI6MTc..."
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqb2FvQGVtYWlsLmNvbSIsImlhdCI6MTc4MDkyNzc4NiwiZXhwIjoxNzgxMDE0MTg2fQ.uQ6nS-Kwxj2nwwMSgCk4ckhnjGlZIWKMOOeHNxjYyDM"
 }
 ```
 
@@ -209,6 +213,28 @@ Público (sem autenticação).
 | `403 Forbidden` | Email não encontrado ou senha incorreta |
 
 > O token tem validade de **24 horas** (`jwt.expiration=86400000` ms).
+
+---
+
+#### `POST /auth/request-code` — Solicitar código OTP *(Etapa 2)*
+
+Público (sem autenticação). Não retorna o código gerado na resposta.
+
+**Requisição:**
+```json
+{
+  "email": "joao@email.com"
+}
+```
+
+**Resposta `200 OK`:** corpo vazio.
+
+**O que acontece internamente:**
+1. Busca o e-mail no banco. Se não existir, cria um usuário temporário com `ROLE_CUSTOMER` e senha aleatória.
+2. Gera um código numérico aleatório de 6 dígitos.
+3. Armazena o código no `CodigoCacheService` (expira em 5 minutos).
+4. Publica um `EmailDto` na fila `default.email` do RabbitMQ com assunto `"Seu código de acesso"`.
+5. Retorna `200 OK` — o código **não** é exposto na resposta.
 
 ---
 
@@ -233,6 +259,20 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
 #### `GET /users/test/administrator` — Rota protegida (ADMINISTRATOR)
 
 Mesmo comportamento da rota anterior, mas exige `ROLE_ADMINISTRATOR`.
+
+---
+
+### Cache de OTP — CodigoCacheService
+
+Implementado com `ConcurrentHashMap` (thread-safe, sem dependência externa).
+
+| Detalhe | Valor |
+|---------|-------|
+| Estrutura | `ConcurrentHashMap<String, Entry>` |
+| Chave | E-mail do usuário |
+| Valor | Código de 6 dígitos + timestamp de expiração |
+| TTL | 5 minutos (300 segundos) |
+| Limpeza | `@Scheduled(fixedRate = 60_000)` — varre entradas expiradas a cada minuto |
 
 ---
 
@@ -264,8 +304,8 @@ spring.jpa.show-sql=true
 jwt.secret=3cfa76ef14937c1c0ea519f8fc057a80fcd04a7420f8e8bcd0a7567c272e007b
 jwt.expiration=86400000
 
-# AMQP desabilitado até Etapa 2
-spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration
+spring.rabbitmq.addresses=amqps://usuario:senha@host.rmq.cloudamqp.com/vhost
+broker.queue.email.name=default.email
 ```
 
 ---
@@ -324,7 +364,7 @@ spring.datasource.username=root
 spring.datasource.password=
 spring.jpa.hibernate.ddl-auto=update
 
-spring.rabbitmq.addresses=amqps://pweydunl:gY0MMtXVP1sD9qu1MdWFcwtmp35tiEj0@fuji.lmq.cloudamqp.com/pweydunl
+spring.rabbitmq.addresses=amqps://usuario:senha@host.rmq.cloudamqp.com/vhost
 broker.queue.email.name=default.email
 ```
 
@@ -374,7 +414,7 @@ spring.datasource.username=root
 spring.datasource.password=
 spring.jpa.hibernate.ddl-auto=update
 
-spring.rabbitmq.addresses=amqps://pweydunl:gY0MMtXVP1sD9qu1MdWFcwtmp35tiEj0@fuji.lmq.cloudamqp.com/pweydunl
+spring.rabbitmq.addresses=amqps://usuario:senha@host.rmq.cloudamqp.com/vhost
 broker.queue.email.name=default.email
 
 spring.mail.host=smtp.gmail.com
@@ -396,7 +436,9 @@ spring.mail.properties.mail.smtp.starttls.enable=true
 
 ## Testando com Postman
 
-### Passo 1 — Criar usuário
+### Etapa 1 — Autenticação JWT
+
+**Passo 1 — Criar usuário**
 
 ```
 POST http://localhost:8081/users
@@ -410,7 +452,7 @@ Content-Type: application/json
 ```
 Esperado: `201 Created`
 
-### Passo 2 — Login
+**Passo 2 — Login**
 
 ```
 POST http://localhost:8081/users/login
@@ -423,20 +465,60 @@ Content-Type: application/json
 ```
 Esperado: `200 OK` com `{ "token": "eyJ..." }`
 
-### Passo 3 — Rota protegida sem token
+**Passo 3 — Rota protegida sem token**
 
 ```
 GET http://localhost:8081/users/test/customer
 ```
 Esperado: `403 Forbidden`
 
-### Passo 4 — Rota protegida com token
+**Passo 4 — Rota protegida com token**
 
 ```
 GET http://localhost:8081/users/test/customer
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
 ```
 Esperado: `200 OK`
+
+---
+
+### Etapa 2 — Código OTP via RabbitMQ
+
+**Passo 5 — Solicitar código (e-mail existente)**
+
+```
+POST http://localhost:8081/auth/request-code
+Content-Type: application/json
+
+{
+  "email": "aluno@ifsp.edu.br"
+}
+```
+Esperado: `200 OK` (corpo vazio — o código não é retornado)
+
+**Passo 6 — Solicitar código (e-mail não cadastrado)**
+
+```
+POST http://localhost:8081/auth/request-code
+Content-Type: application/json
+
+{
+  "email": "novo@email.com"
+}
+```
+Esperado: `200 OK` — um usuário temporário é criado automaticamente.
+
+**Verificação no CloudAMQP:**  
+Acesse o painel do CloudAMQP → **RabbitMQ Manager** → aba **Queues** → fila `default.email`.  
+A mensagem publicada deve aparecer com o payload JSON:
+```json
+{
+  "emailTo": "aluno@ifsp.edu.br",
+  "subject": "Seu código de acesso",
+  "text": "Seu código de acesso é: 384712",
+  "userId": "..."
+}
+```
 
 ---
 
@@ -449,6 +531,7 @@ Esperado: `200 OK`
 | `Duplicate entry` para email | E-mail já cadastrado no banco | Usar um e-mail diferente na requisição |
 | `403` no `POST /users` | Versão antiga compilada em cache | Rodar `mvn clean spring-boot:run` |
 | `Unable to determine Dialect` | MySQL parado | Iniciar o MySQL no painel XAMPP |
+| `Connection refused` no RabbitMQ | URI do CloudAMQP incorreta | Verificar `spring.rabbitmq.addresses` no `application.properties` |
 
 ---
 
@@ -457,6 +540,7 @@ Esperado: `200 OK`
 | Tag | Conteúdo |
 |-----|----------|
 | `entrega1` | `user-service` JWT funcionando + estrutura base do `ms-email` |
+| `entrega2` | `user-service` com OTP, cache (`CodigoCacheService`) e producer RabbitMQ (`/auth/request-code`) |
 
 ---
 
