@@ -2,7 +2,7 @@
 
 Projeto acadêmico desenvolvido para a disciplina **Web 3 — IFSP**  
 Curso de Análise e Desenvolvimento de Sistemas · CP3025861  
-Tag de entrega: `entrega2`
+Tag de entrega: `entrega4`
 
 ---
 
@@ -535,12 +535,109 @@ A mensagem publicada deve aparecer com o payload JSON:
 
 ---
 
+## Frontend — Node.js (Etapa 3 e 4)
+
+### Pré-requisitos adicionais
+
+| Ferramenta | Versão mínima |
+|------------|---------------|
+| Node.js | 18 |
+| npm | 9 |
+
+### Instalação
+
+```powershell
+cd frontend
+npm install
+```
+
+### Executar
+
+```powershell
+npm start
+```
+
+O frontend ficará disponível em **http://localhost:3000**.
+
+### Rotas do frontend
+
+| Rota | Método | Descrição |
+|------|--------|-----------|
+| `GET /` | — | Página inicial — solicitar código OTP |
+| `POST /send-code` | form | Envia código OTP para o e-mail |
+| `GET /verify` | — | Página de verificação do código |
+| `POST /verify-code` | JSON | Verifica o código e retorna JWT |
+| `GET /register` | — | Página de cadastro de nome e cargo |
+| `POST /register` | JSON | Salva nome/role via `/users/update-profile` |
+| `GET /dashboard` | — | Dashboard protegido |
+| `GET /users/me` | proxy | Retorna perfil do usuário autenticado |
+| `GET /api/protected` | proxy | Chama `/users/test/customer` no backend |
+
+### Fluxo completo
+
+```
+1. Acesse http://localhost:3000
+2. Digite seu e-mail → receba o código OTP por e-mail
+3. Digite o código → JWT é gerado e armazenado no sessionStorage
+4. Preencha nome e escolha cargo → perfil salvo no banco
+5. Dashboard → teste endpoints protegidos e visualize seu perfil
+```
+
+---
+
+## Etapa 4 — Endpoints adicionais no user-service
+
+### `POST /users/update-profile` — Atualizar perfil
+
+Requer token JWT válido (qualquer role autenticada).
+
+**Requisição:**
+```json
+{
+  "name": "João Silva",
+  "role": "ROLE_CUSTOMER"
+}
+```
+
+**Resposta `200 OK`:**
+```json
+{
+  "email": "joao@email.com",
+  "name": "João Silva",
+  "roles": ["ROLE_CUSTOMER"]
+}
+```
+
+---
+
+### `GET /users/me` — Perfil do usuário autenticado
+
+Requer token JWT válido.
+
+**Header:**
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+```
+
+**Resposta `200 OK`:**
+```json
+{
+  "email": "joao@email.com",
+  "name": "João Silva",
+  "roles": ["ROLE_CUSTOMER"]
+}
+```
+
+---
+
 ## Entregas
 
 | Tag | Conteúdo |
 |-----|----------|
 | `entrega1` | `user-service` JWT funcionando + estrutura base do `ms-email` |
 | `entrega2` | `user-service` com OTP, cache (`CodigoCacheService`) e producer RabbitMQ (`/auth/request-code`) |
+| `entrega3` | Frontend Node.js com fluxo OTP completo (index, verify, dashboard) |
+| `entrega4` | Cadastro de nome/cargo (`register.html`), `update-profile`, `GET /me`, `dashboard.html` completo, README e scripts |
 
 ---
 

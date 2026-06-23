@@ -1,5 +1,6 @@
 package com.ms.email.services;
 
+import com.ms.email.dtos.EmailRecordDto;
 import com.ms.email.enums.StatusEmail;
 import com.ms.email.models.EmailModel;
 import com.ms.email.repositories.EmailRepository;
@@ -26,7 +27,12 @@ public class EmailService {
     }
 
     @Transactional
-    public EmailModel sendEmail(EmailModel emailModel) {
+    public EmailModel sendEmail(EmailRecordDto emailRecordDto) {
+        EmailModel emailModel = new EmailModel();
+        emailModel.setUserId(emailRecordDto.userId());
+        emailModel.setEmailTo(emailRecordDto.emailTo());
+        emailModel.setSubject(emailRecordDto.subject());
+        emailModel.setText(emailRecordDto.text());
         emailModel.setSendDateEmail(LocalDateTime.now());
         emailModel.setEmailFrom(emailFrom);
 
@@ -41,6 +47,8 @@ public class EmailService {
             emailModel.setStatusEmail(StatusEmail.SENT);
         } catch (MailException e) {
             emailModel.setStatusEmail(StatusEmail.ERROR);
+            System.err.println("[EMAIL ERROR] " + e.getMessage());
+            if (e.getCause() != null) System.err.println("[EMAIL CAUSE] " + e.getCause().getMessage());
         }
 
         return emailRepository.save(emailModel);

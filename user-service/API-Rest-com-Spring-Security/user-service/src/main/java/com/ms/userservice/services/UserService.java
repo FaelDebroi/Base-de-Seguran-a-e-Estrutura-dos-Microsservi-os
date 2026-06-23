@@ -3,6 +3,8 @@ package com.ms.userservice.services;
 import com.ms.userservice.dtos.CreateUserDto;
 import com.ms.userservice.dtos.LoginUserDto;
 import com.ms.userservice.dtos.RecoveryJwtTokenDto;
+import com.ms.userservice.dtos.UpdateProfileDto;
+import com.ms.userservice.dtos.UserProfileDto;
 import com.ms.userservice.entities.Role;
 import com.ms.userservice.entities.RoleName;
 import com.ms.userservice.entities.User;
@@ -14,8 +16,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -62,5 +66,33 @@ public class UserService {
                 userRepository.save(novoUsuario);
                 return UUID.nameUUIDFromBytes(String.valueOf(novoUsuario.getId()).getBytes());
             });
+    }
+
+    public RecoveryJwtTokenDto gerarTokenParaEmail(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + email));
+        UserDetailsImpl userDetails = new UserDetailsImpl(user);
+        return new RecoveryJwtTokenDto(jwtTokenService.generateToken(userDetails));
+    }
+
+    public User updateProfile(String email, UpdateProfileDto dto) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + email));
+        Role role = roleRepository.findByName(dto.role())
+            .orElseGet(() -> roleRepository.save(new Role(dto.role())));
+        user.setName(dto.name());
+        List<Role> newRoles = new ArrayList<>();
+        newRoles.add(role);
+        user.setRoles(newRoles);
+        return userRepository.save(user);
+    }
+
+    public UserProfileDto getProfile(String email) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + email));
+        List<String> roleNames = user.getRoles().stream()
+            .map(r -> r.getName().name())
+            .collect(Collectors.toList());
+        return new UserProfileDto(user.getEmail(), user.getName(), roleNames);
     }
 }
